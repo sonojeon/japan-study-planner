@@ -236,11 +236,15 @@ async function clearAll() {
   await Promise.all([clearStore("universities"),clearStore("events"),clearStore("settings")]);await refresh();showToast("모든 데이터를 삭제했어요.");
 }
 function bindEvents() {
+  // Closing a dialog must NEVER submit its enclosing form or trigger required-field validation.
   document.querySelectorAll("[data-close-dialog]").forEach(button=>{
-    button.addEventListener("click",()=>{
+    button.type = "button";
+    button.addEventListener("click",(event)=>{
+      event.preventDefault();
+      event.stopImmediatePropagation();
       const dialog=$(button.dataset.closeDialog);
       if(dialog?.open) dialog.close();
-    });
+    }, true);
   });
   document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>showView(t.dataset.view));
   document.querySelectorAll("[data-goto]").forEach(b=>b.onclick=()=>showView(b.dataset.goto));
