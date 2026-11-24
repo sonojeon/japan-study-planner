@@ -236,6 +236,12 @@ async function clearAll() {
   await Promise.all([clearStore("universities"),clearStore("events"),clearStore("settings")]);await refresh();showToast("모든 데이터를 삭제했어요.");
 }
 function bindEvents() {
+  document.querySelectorAll("[data-close-dialog]").forEach(button=>{
+    button.addEventListener("click",()=>{
+      const dialog=$(button.dataset.closeDialog);
+      if(dialog?.open) dialog.close();
+    });
+  });
   document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>showView(t.dataset.view));
   document.querySelectorAll("[data-goto]").forEach(b=>b.onclick=()=>showView(b.dataset.goto));
   $("addUniversityBtn").onclick=openUniversityDialog;
