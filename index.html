@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#5268d9">
+  <meta name="description" content="나만의 일본 대학 입시 일정과 준비 과정을 관리하는 플래너">
+  <title>일본 유학 플래너</title>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icons/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">日</div>
+        <div><h1>일본 유학 플래너</h1><p>나만의 대학 입시 일정과 준비 과정을 한곳에</p></div>
+      </div>
+      <div class="top-actions">
+        <button class="btn btn-light" id="exportBtn">백업</button>
+        <button class="btn btn-primary" id="addEventTop">＋ 일정 추가</button>
+      </div>
+    </header>
+
+    <nav class="tabs" aria-label="주요 메뉴">
+      <button class="tab active" data-view="dashboard">대시보드</button>
+      <button class="tab" data-view="universities">관심 대학</button>
+      <button class="tab" data-view="events">입시 일정</button>
+      <button class="tab" data-view="settings">데이터 관리</button>
+    </nav>
+
+    <main>
+      <section class="view active" id="view-dashboard">
+        <div class="stats">
+          <article class="stat-card"><span>등록 대학</span><strong id="statUniversities">0</strong><small>관심 대학 및 지원 대학</small></article>
+          <article class="stat-card"><span>등록 일정</span><strong id="statEvents">0</strong><small>전체 입시 일정</small></article>
+          <article class="stat-card"><span>다가오는 일정</span><strong id="statUpcoming">0</strong><small>오늘 이후의 일정</small></article>
+        </div>
+        <div class="dashboard-grid">
+          <section class="panel calendar-panel">
+            <div class="panel-heading">
+              <div><h2>월간 캘린더</h2><p id="calendarSub">일정을 한눈에 확인하세요.</p></div>
+              <div class="calendar-controls">
+                <button class="icon-btn" id="prevMonth" aria-label="이전 달">‹</button>
+                <strong id="monthLabel"></strong>
+                <button class="icon-btn" id="nextMonth" aria-label="다음 달">›</button>
+                <button class="btn btn-light btn-small" id="todayBtn">오늘</button>
+              </div>
+            </div>
+            <div class="calendar" id="calendar"></div>
+            <p class="hint">날짜를 누르면 해당 날짜의 일정을 확인하거나 추가할 수 있어요.</p>
+          </section>
+          <aside class="side-stack">
+            <section class="panel"><div class="panel-heading"><div><h2>다가오는 일정</h2><p>가까운 날짜순으로 표시</p></div><button class="text-btn" data-goto="events">전체 보기</button></div><div id="upcomingList" class="compact-list empty">등록된 일정이 없어요.</div></section>
+            <section class="panel"><div class="panel-heading"><div><h2>내 관심 대학</h2><p>지원 준비 중인 대학</p></div><button class="text-btn" data-goto="universities">전체 보기</button></div><div id="dashboardUniversities" class="chip-list empty">아직 추가한 대학이 없어요.</div></section>
+            <section class="panel"><div class="panel-heading"><div><h2>나의 메모</h2><span class="save-state" id="noteSaveState">자동 저장</span></div></div><textarea id="globalNote" class="global-note" placeholder="유학 준비 중 떠오르는 생각, 확인할 사항, 학원 상담 내용 등을 자유롭게 적어두세요."></textarea><p class="hint">이 메모는 현재 기기에 저장됩니다.</p></section>
+          </aside>
+        </div>
+      </section>
+
+      <section class="view" id="view-universities">
+        <div class="section-heading"><div><h2>관심 대학</h2><p>지원하고 싶은 대학과 학과, 준비 상황을 관리하세요.</p></div><button class="btn btn-primary" id="addUniversityBtn">＋ 대학 추가</button></div>
+        <div id="universityList" class="university-grid empty-state">아직 등록한 대학이 없어요.</div>
+      </section>
+
+      <section class="view" id="view-events">
+        <div class="section-heading"><div><h2>입시 일정</h2><p>원서 접수, 시험, 면접, 합격 발표 등을 기록하세요.</p></div><button class="btn btn-primary" id="addEventBtn">＋ 일정 추가</button></div>
+        <div class="filter-row"><label>대학별 보기 <select id="eventUniversityFilter"><option value="">전체 대학</option></select></label><label>일정 종류 <select id="eventTypeFilter"><option value="">전체 종류</option><option>원서 접수</option><option>시험</option><option>면접</option><option>합격 발표</option><option>서류 제출</option><option>기타</option></select></label></div>
+        <div id="eventList" class="event-list empty-state">등록된 일정이 없어요.</div>
+      </section>
+
+      <section class="view" id="view-settings">
+        <div class="section-heading"><div><h2>데이터 관리</h2><p>데이터를 안전하게 보관하고 필요할 때 복원하세요.</p></div></div>
+        <div class="settings-grid">
+          <article class="panel setting-card"><div class="setting-icon">↓</div><h3>데이터 백업</h3><p>대학, 일정, 메모를 JSON 파일 하나로 내보냅니다.</p><button class="btn btn-primary" id="backupBtn">백업 파일 다운로드</button></article>
+          <article class="panel setting-card"><div class="setting-icon">↑</div><h3>데이터 복원</h3><p>이전에 내보낸 JSON 백업 파일을 불러옵니다. 현재 데이터에 병합하지 않고 교체합니다.</p><label class="btn btn-light file-label">백업 파일 선택<input type="file" id="restoreInput" accept=".json,application/json"></label></article>
+          <article class="panel setting-card danger-card"><div class="setting-icon">!</div><h3>모든 데이터 초기화</h3><p>현재 기기에 저장된 대학, 일정, 메모를 모두 삭제합니다. 실행 전 백업을 권장합니다.</p><button class="btn btn-danger" id="clearBtn">전체 데이터 삭제</button></article>
+        </div>
+        <div class="notice"><strong>저장 방식 안내</strong><p>데이터는 이 웹 앱이 실행되는 기기의 브라우저 저장 공간(IndexedDB)에 저장됩니다. 다른 기기와 자동 동기화되지 않으며, 홈 화면 앱을 삭제하거나 브라우저 데이터를 지우면 데이터가 사라질 수 있습니다. 정기적으로 백업 파일을 보관하세요.</p></div>
+        <div class="about-line" id="storageStatus">저장소 확인 중…</div>
+      </section>
+    </main>
+    <footer>일본 유학 플래너 <span>·</span> 데이터는 현재 기기에 저장됩니다.</footer>
+  </div>
+
+  <dialog id="universityDialog">
+    <form method="dialog" id="universityForm" class="dialog-form">
+      <div class="dialog-heading"><div><h2 id="universityDialogTitle">대학 추가</h2><p>대학 및 학과 정보를 입력하세요.</p></div><button class="close-btn" value="cancel" aria-label="닫기">×</button></div>
+      <input type="hidden" id="universityId">
+      <label>대학명<input id="universityName" required maxlength="100" placeholder="예: 도쿄이과대학"></label>
+      <label>학부·학과<input id="universityDepartment" maxlength="100" placeholder="예: 공학부 기계공학과"></label>
+      <label>지원 상태<select id="universityStatus"><option>관심</option><option>지원 준비</option><option>지원 완료</option><option>합격</option><option>불합격</option><option>보류</option></select></label>
+      <label>대학별 메모<textarea id="universityMemo" rows="4" placeholder="지원 조건, 제출 서류, 확인할 사항 등을 적어두세요."></textarea></label>
+      <div class="dialog-actions"><button class="btn btn-light" value="cancel">취소</button><button class="btn btn-primary" id="saveUniversityBtn" value="default">저장</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="eventDialog">
+    <form method="dialog" id="eventForm" class="dialog-form">
+      <div class="dialog-heading"><div><h2 id="eventDialogTitle">일정 추가</h2><p>중요한 입시 날짜를 기록하세요.</p></div><button class="close-btn" value="cancel" aria-label="닫기">×</button></div>
+      <input type="hidden" id="eventId">
+      <label>일정명<input id="eventTitle" required maxlength="120" placeholder="예: 원서 접수 시작"></label>
+      <div class="form-two"><label>날짜<input id="eventDate" type="date" required></label><label>시간<input id="eventTime" type="time"></label></div>
+      <div class="form-two"><label>일정 종류<select id="eventType"><option>원서 접수</option><option>시험</option><option>면접</option><option>합격 발표</option><option>서류 제출</option><option>기타</option></select></label><label>관련 대학<select id="eventUniversity"><option value="">선택 안 함</option></select></label></div>
+      <label>메모<textarea id="eventMemo" rows="3" placeholder="장소, 준비물, 유의사항 등을 적어두세요."></textarea></label>
+      <div class="dialog-actions"><button class="btn btn-light" value="cancel">취소</button><button class="btn btn-primary" id="saveEventBtn" value="default">저장</button></div>
+    </form>
+  </dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="./app.js"></script>
+</body>
+</html>
